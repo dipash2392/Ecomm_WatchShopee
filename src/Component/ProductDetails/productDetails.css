@@ -1,0 +1,23 @@
+.mainContainer{
+  margin-top: 5%;
+}
+.miniImg {
+  width: 50%;
+}
+
+.highlightContainer{
+  display: flex;
+  flex-direction: row;
+}
+.productDescription{
+  font-size: 12px;
+}
+.productDescriptionTitle{
+  font-size: 14px;
+  color: gray;
+  font-weight: 500;
+}
+.specialPriceCss{
+  font-weight: 500;
+  color: green;
+}

@@ -1,0 +1,16 @@
+.productImg{
+    height: 18vh;
+    max-width: 40% !important;
+    max-height: 40% !important;
+}
+
+.ratingCss{
+    display: flex;
+    flex-direction: row;
+}
+
+.productCardHover:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition-duration: 0.2s;
+  }
