@@ -14,14 +14,18 @@ import NavBar from "../NavBar/NavBar";
 import BannerCarousel from "../BannerCarousel/BannerCarousel";
 import Products from "../Products/Products";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { getProductDetails,addProductList } from "../../Redux/productSlice";
 
 const drawerWidth = 300;
 
 export default function HomePage({ history }) {
   const [productList, setProductList] = useState([]);
+  const dispatch = useDispatch();
 
   const viewProductDetails = (product) => {
     console.log(product);
+    dispatch(getProductDetails({productDetails:product}))
     history.push({
       pathname: `/productDetails/${product.id}`,
       state: { productDetail: product, productList:productList },
@@ -34,6 +38,7 @@ export default function HomePage({ history }) {
       .then(function (response) {
         // handle success
         setProductList(response.data);
+        dispatch(addProductList({productList:response.data}))
         console.log(response);
       })
       .catch(function (error) {
