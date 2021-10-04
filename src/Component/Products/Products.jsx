@@ -25,7 +25,7 @@ export default function Products({ data, showProductDetails }) {
         ></img>
       </div>
       <CardContent>
-        <Typography gutterBottom variant="h6" component="div">
+        <Typography gutterBottom variant="h6" component="div" dat-testid="product-Name">
           {data.productName}
         </Typography>
         <Typography variant="body2" color="text.secondary">

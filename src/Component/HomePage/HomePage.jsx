@@ -15,21 +15,51 @@ import BannerCarousel from "../BannerCarousel/BannerCarousel";
 import Products from "../Products/Products";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { getProductDetails,addProductList } from "../../Redux/productSlice";
+import { getProductDetails, addProductList } from "../../Redux/productSlice";
+import FilterOption from "../FilterOption/FilterOption";
 
 const drawerWidth = 300;
 
 export default function HomePage({ history }) {
   const [productList, setProductList] = useState([]);
+  const [filterOption, setFilterOption] = useState(0);
   const dispatch = useDispatch();
 
   const viewProductDetails = (product) => {
     console.log(product);
-    dispatch(getProductDetails({productDetails:product}))
+    dispatch(getProductDetails({ productDetails: product }));
     history.push({
       pathname: `/productDetails/${product.id}`,
-      state: { productDetail: product, productList:productList },
+      state: { productDetail: product, productList: productList },
     });
+  };
+
+  const ascendingProduct = (a, b) => {
+    const bandA = a.price;
+    const bandB = b.price;
+
+    let comparison = 0;
+    if (bandA > bandB) {
+      comparison = 1;
+    } else if (bandA < bandB) {
+      comparison = -1;
+    }
+    return comparison;
+  };
+  const filterProduct = (option) => {
+    console.log(option);
+    let list = [...productList];
+    if (option === "1") {
+      list.sort((a, b) => {
+        return a.price - b.price;
+    });
+    setProductList(list)
+    }else if (option === "2") {
+      list.sort((a, b) => {
+        return b.price - a.price;
+    });
+    setProductList(list)
+    }
   };
 
   const getProducts = async () => {
@@ -37,29 +67,34 @@ export default function HomePage({ history }) {
       .get("http://localhost:3000/products")
       .then(function (response) {
         // handle success
-        setProductList(response.data);
-        dispatch(addProductList({productList:response.data}))
-        console.log(response);
+        if (response.data) {
+          setProductList(response.data);
+          dispatch(addProductList({ productList: response.data }));
+        }
       })
       .catch(function (error) {
         // handle error
-        console.log(error);
       });
   };
   useEffect(() => {
     getProducts();
+    return () => {
+      setProductList([]);
+    };
   }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar
+        data-testid="nav-bar"
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
       >
         <NavBar />
       </AppBar>
       <Drawer
+        data-testid="side-bar"
         variant="permanent"
         sx={{
           width: drawerWidth,
@@ -73,10 +108,6 @@ export default function HomePage({ history }) {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {/* <ListItem id="" >
-              <ListItemText primary={"Categories"} />
-            </ListItem> */}
-            {/* <Divider /> */}
             {["Mobile Phones", "Desktop", "Laptops", "Watches"].map(
               (text, index) => (
                 <ListItem button key={text}>
@@ -92,11 +123,18 @@ export default function HomePage({ history }) {
       </Drawer>
       <div className="container">
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-          {/* <Toolbar /> */}
-
           <BannerCarousel className="mt-1" />
-
-          <h3 className="mt-5 mb-5">Today's Deals</h3>
+          <div className="container mt-5 mb-5">
+            <div className="row">
+              <div className="col-6">
+                {" "}
+                <h3 className="">Today's Deals</h3>
+              </div>
+              <div className="col-6 w-30">
+                <FilterOption filterProduct={filterProduct} />
+              </div>
+            </div>
+          </div>
           <div className="container">
             <div className="row">
               {productList.map((product) => (
