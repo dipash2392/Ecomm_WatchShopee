@@ -4,7 +4,6 @@ import {
   act,
   cleanup,
   waitFor} from "@testing-library/react";
-// import "jest-dom/extend-expect";
 import { Provider } from "react-redux";
 import HomePage from "../HomePage";
 import store from "../../../Redux/store";
