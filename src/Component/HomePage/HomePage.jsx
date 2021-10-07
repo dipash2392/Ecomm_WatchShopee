@@ -17,6 +17,7 @@ import axios from "axios";
 import { useDispatch } from "react-redux";
 import { getProductDetails, addProductList } from "../../Redux/productSlice";
 import FilterOption from "../FilterOption/FilterOption";
+import HomePageService from "../Services/homePageService";
 
 const drawerWidth = 300;
 
@@ -63,18 +64,26 @@ export default function HomePage({ history }) {
   };
 
   const getProducts = async () => {
-    await axios
-      .get("http://localhost:3000/products")
-      .then(function (response) {
-        // handle success
-        if (response.data) {
-          setProductList(response.data);
-          dispatch(addProductList({ productList: response.data }));
-        }
-      })
-      .catch(function (error) {
-        // handle error
-      });
+    // await axios
+    //   .get("http://localhost:3000/products")
+    //   .then(function (response) {
+    //     // handle success
+    //     if (response.data) {
+    //       setProductList(response.data);
+    //       dispatch(addProductList({ productList: response.data }));
+    //     }
+    //   })
+    //   .catch(function (error) {
+    //     // handle error
+    //   });
+
+    try{
+      const products = await HomePageService()
+      setProductList(products);
+      dispatch(addProductList({ productList: products }));
+    }catch(error){
+      console.log(error)
+    }
   };
   useEffect(() => {
     getProducts();

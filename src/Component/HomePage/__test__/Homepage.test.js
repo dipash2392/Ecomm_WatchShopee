@@ -1,29 +1,27 @@
-import {
-  render,
-  screen,
-  act,
-  cleanup,
-  waitFor} from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import { Provider } from "react-redux";
 import HomePage from "../HomePage";
 import store from "../../../Redux/store";
-import Product from "../../Products/Products";
-import mockAxios from "../../../__mocks__/axiosMock"
+import { act } from "react-dom/test-utils";
+import ReactDOM from "react-dom";
+import axios from "axios";
+import Products from "../../Services/homePageService";
+let container;
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () =>
-      Promise.resolve({
-        id: 1,
-        productImg: "watch_1",
-        productName: "JYSHVI ENTERPRISES Smart watch",
-        price: 899,
-        ratings: 2,
-        highlights: "With Call Function. Touchscreen. Fitness and outdoor.",
-        description: "Description",
-      }),
-  })
-);
+// global.fetch = jest.fn(() =>
+//   Promise.resolve({
+//     json: () =>
+//       resolve({
+//         id: 1,
+//         productImg: "watch_1",
+//         productName: "JYSHVI ENTERPRISES Smart watch",
+//         price: 899,
+//         ratings: 2,
+//         highlights: "With Call Function. Touchscreen. Fitness and outdoor.",
+//         description: "Description",
+//       }),
+//   })
+// );
 
 const MockHome = () => {
   return (
@@ -33,51 +31,11 @@ const MockHome = () => {
   );
 };
 
-afterEach(cleanup);
-// Describe Block: Use this block to group Common test
-describe("HomePage", () => {
-  it("renders", () => {
-    let wrapper =  act(() => {
-        render(<MockHome />);
-    });
-    expect(wrapper).not.toBeNull();
-  });
+jest.mock("axios");
 
-  test("component renders correctly", () => {
-    const { queryByTestId } = render(<MockHome />);
-    expect(queryByTestId("nav-bar")).toBeTruthy();
-    expect(queryByTestId("side-bar")).toBeTruthy();
-  });
-
-  test("renders Today's Deals heading", () => {
-    act(() => {
-        render(<MockHome />);
-    });
-    const headingElement = screen.getByText(/Today's Deals/i);
-    expect(headingElement).toBeInTheDocument();
-  });
-
-  test("async axios request", async() => {
- mockAxios.get.mockResolvedValue({data:{
-    id: 1,
-    productImg: "watch_1",
-    productName: "JYSHVI ENTERPRISES Smart watch",
-    price: 899,
-    ratings: 2,
-    highlights: "With Call Function. Touchscreen. Fitness and outdoor.",
-    description: "Description",
-  }})
-  await act(async()=>{
-      await waitFor(()=>render(<MockHome />))
-  })
-  
-//   const resolveElement = await waitForElement(()=>getByText("productList"))
-  expect(mockAxios.get).toHaveBeenCalledTimes(1)
-  });
-
-
-  it("get data passed correctly to the product", async () => {
-    const mockData = {
+test("should fetch Products", () => {
+  const products = [
+    {
       id: 1,
       productImg: "watch_1",
       productName: "JYSHVI ENTERPRISES Smart watch",
@@ -85,14 +43,12 @@ describe("HomePage", () => {
       ratings: 2,
       highlights: "With Call Function. Touchscreen. Fitness and outdoor.",
       description: "Description",
-    };
-    act(() => {
-        render(<Product data={mockData} />);
-    });
-    // render(<Product data={mockData} />);
-    const text = screen.queryAllByText("JYSHVI ENTERPRISES Smart watch")[0]
-      .innerHTML;
-
-    expect(text).toBe("JYSHVI ENTERPRISES Smart watch");
+    },
+  ];
+  const resp = { data: products };
+  axios.get.mockResolvedValue(resp);
+  return Products().then((data) => {
+    expect(data).toEqual(products);
+    expect(data.length).toEqual(1)
   });
 });
